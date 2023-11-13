@@ -1,18 +1,37 @@
-document.getElementById('searchButton').addEventListener('click', function() {
-  var xhr = new XMLHttpRequest();
+document.addEventListener("DOMContentLoaded", function () {
+  const input = document.querySelector("input");
+  const form = document.querySelector("form");
+  const result = document.querySelector("#result");
 
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      if (xhr.status === 200) {
-        var superheroes = JSON.parse(xhr.responseText);
-        var superheroList = superheroes.map(superhero => superhero.alias).join("\n");
-        alert("List of Superheroes:\n" + superheroList);
-      } else {
-        console.error('Request failed');
-      }
-    }
-  };
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-  xhr.open('GET', 'superheroes.php');
-  xhr.send();
+    let userInput = input.value.trim();
+    userInput = toTitleCase(userInput); 
+
+    let url = `superheroes.php?name=${userInput}`;
+
+    fetch(url)
+      .then(res => {
+        if (res.ok) {
+          return res.text();
+        } else {
+          return Promise.reject('Error occurred');
+        }
+      })
+      .then(data => {
+        result.innerHTML = data;
+      })
+      .catch(error => {
+        alert('Error fetching data:', error);
+      });
+  });
+
+  function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
 });
+
+
