@@ -1,13 +1,18 @@
-document.getElementById("searchButton").addEventListener("click", function() {
-  let xhr = new XMLHttpRequest();
-  let url = "http://localhost/info2180-lab4/superheroes.php";
-  xhr.open("GET", url, true);
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      alert(xhr.responseText);
-    } else {
-      alert('Request failed. Status: ' + xhr.status);
+document.getElementById('searchButton').addEventListener('click', function() {
+  var xhr = new XMLHttpRequest();
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.status === 200) {
+        var superheroes = JSON.parse(xhr.responseText);
+        var superheroList = superheroes.map(superhero => superhero.alias).join("\n");
+        alert("List of Superheroes:\n" + superheroList);
+      } else {
+        console.error('Request failed');
+      }
     }
   };
+
+  xhr.open('GET', 'superheroes.php');
   xhr.send();
 });
